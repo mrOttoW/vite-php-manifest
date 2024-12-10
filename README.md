@@ -177,18 +177,14 @@ The plugin generates the following manifest.php:
 
 ```php
 <?php
-return [
-    'scripts' => [
-        'main.js' => [
-            'file' => 'assets/main-1234.js',
-            'isEntry' => true,
-        ],
-    ],
-    'styles' => [
-        'styles.css' => [
-            'file' => 'assets/styles-5678.css',
-            'isEntry' => false,
-        ],
-    ],
-];
+  return array(
+    'main.js' => array(
+      'file' => 'assets/main-1234.js',
+      'isEntry' => true,
+    ),
+    'styles.css' => array(
+      'file' => 'assets/styles-5678.css',
+      'isEntry' => false,
+    ),
+  );
 ```
