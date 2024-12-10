@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://vitejs.dev/">
-    <img width="200" height="200" hspace="10" src="vite-logo.svg" alt="vite logo" />
+    <img width="200" height="200" hspace="10" src="https://raw.githubusercontent.com/mrOttoW/vite-php-manifest/5f8a97e425e2d503cb66c0a5dd4216dde5cc7bea/vite-logo.svg" alt="vite logo" />
   </a>
   <h1>️Vite 6 PHP Manifest</h1>
   <p>
@@ -105,7 +105,7 @@ A function to group chunks in the PHP manifest. Can be an object mapping group n
 
 ```javascript
  group: {
-  js: ['js', 'jsx'],
+    js: ['js', 'jsx'],
     css: ['css'],
     images: ['png', 'jpg', 'jpeg', 'gif'],
     svg: ['svg']
