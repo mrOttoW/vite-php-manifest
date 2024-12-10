@@ -1,6 +1,6 @@
 {
   "name": "vite-php-manifest",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple Vite 6+ plugin generate a PHP manifest.",
   "files": [
     "dist/"
