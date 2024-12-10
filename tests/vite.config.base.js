@@ -33,7 +33,6 @@ export const config = {
 };
 
 export const pluginOptions = {
-  unlinkOriginManifest: false,
   group: (originalFileName, manifestChunk) => (originalFileName.endsWith('svg') ? 'svg' : 'other'),
   filter: (originalFileName, manifestChunk) => {
     manifestChunk.test = 'test';

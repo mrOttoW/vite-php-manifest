@@ -22,8 +22,8 @@ interface Options {
   linebreak?: string;
   indent?: string;
   shortArraySyntax?: boolean;
-  manifestFile?: string;
   unlinkOriginManifest?: boolean;
+  manifestFile?: string;
 }
 
 /**
@@ -36,6 +36,16 @@ function VitePhpManifest(optionsParam: Options = {}): Plugin {
   const options: Options = merge(optionsParam, DEFAULT_OPTIONS);
   let rootConfig: ResolvedConfig;
   let rootPath: string;
+  let outDirPath: string;
+
+  /**
+   * Log message.
+   *
+   * @param msg
+   */
+  const log = (msg: string) => {
+    rootConfig.logger.info(`${VITE_PLUGIN_NAME}: ${msg}`, { timestamp: true });
+  };
 
   /**
    * Filter the Manifest.
@@ -56,6 +66,7 @@ function VitePhpManifest(optionsParam: Options = {}): Plugin {
         const fileNameExtension = originalFileName.split('.').pop() || '';
         let manifestGroup = 'other';
 
+        // Group through extension list.
         if (typeof options.group === 'object') {
           for (const [chunkGroup, extensions] of Object.entries(options.group)) {
             if (extensions.includes(fileNameExtension)) {
@@ -63,6 +74,7 @@ function VitePhpManifest(optionsParam: Options = {}): Plugin {
             }
           }
         }
+        // Group through callback.
         if (typeof options.group === 'function') {
           manifestGroup = options.group(originalFileName, manifestChunk);
         }
@@ -78,12 +90,49 @@ function VitePhpManifest(optionsParam: Options = {}): Plugin {
     return options.group !== false ? groupedManifest : manifest;
   };
 
+  const writePhpManifest = (filteredManifest: Manifest | Record<string, Manifest>) => {
+    const phpManifestFile = path.resolve(outDirPath, options.manifestFile);
+    const phpManifestFolder = path.dirname(phpManifestFile);
+    const phpPrinter = json2php.make({
+      linebreak: options.linebreak,
+      indent: options.indent,
+      shortArraySyntax: options.shortArraySyntax,
+    });
+
+    fs.mkdirSync(phpManifestFolder, { recursive: true });
+    fs.writeFileSync(phpManifestFile, `<?php\n\nreturn ${phpPrinter(filteredManifest)};\n`, 'utf-8');
+  };
+
+  /**
+   * Unlink Origin Manifest.
+   *
+   * @param manifestPath
+   */
+  const unlinkOriginManifest = (manifestPath: string) => {
+    const originManifestFolder = path.dirname(manifestPath);
+
+    fs.unlinkSync(manifestPath);
+    fs.readdir(originManifestFolder, (err, files) => {
+      if (err) {
+        log(`Error reading directory: ${originManifestFolder}`);
+      } else {
+        if (files.length === 0) {
+          fs.rm(originManifestFolder, { recursive: true }, err => {
+            if (err) {
+              log(`Error deleting folder: ${originManifestFolder}`);
+            }
+          });
+        }
+      }
+    });
+  };
+
   /**
    * Vite Plugin.
    */
   return {
     name: VITE_PLUGIN_NAME,
-    enforce: 'post',
+    enforce: 'pre',
 
     /**
      * Get Resolved Config.
@@ -93,32 +142,28 @@ function VitePhpManifest(optionsParam: Options = {}): Plugin {
     configResolved(c) {
       rootConfig = c;
       rootPath = c.root;
+      outDirPath = path.resolve(rootPath, rootConfig.build.outDir);
     },
 
     /**
      * Close Bundle hook.
      */
     closeBundle: async () => {
-      const manifestFile = path.resolve(rootPath, rootConfig.build.outDir, options.manifestFile);
+      const resolvedManifestName = rootConfig.build.manifest;
+      const defaultManifestName = path.join('.vite', 'manifest.json');
+      const originManifestPath =
+        resolvedManifestName && typeof resolvedManifestName === 'string'
+          ? path.resolve(outDirPath, resolvedManifestName)
+          : path.resolve(outDirPath, defaultManifestName);
 
-      if (fs.existsSync(manifestFile)) {
-        const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf-8'));
-        const phpPrinter = json2php.make({
-          linebreak: options.linebreak,
-          indent: options.indent,
-          shortArraySyntax: options.shortArraySyntax,
-        });
+      if (fs.existsSync(originManifestPath)) {
+        const manifest = JSON.parse(fs.readFileSync(originManifestPath, 'utf-8'));
         const filteredManifest = options.filter === false && options.group === false ? manifest : filterManifest(manifest);
 
-        fs.writeFileSync(
-          path.resolve(path.dirname(manifestFile), 'manifest.php'),
-          `<?php\n\nreturn ${phpPrinter(filteredManifest)};\n`,
-          'utf-8'
-        );
-        console.log(manifestFile);
+        writePhpManifest(filteredManifest);
 
         if (options.unlinkOriginManifest) {
-          fs.unlinkSync(manifestFile);
+          unlinkOriginManifest(originManifestPath);
         }
       }
     },

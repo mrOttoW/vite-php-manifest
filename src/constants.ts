@@ -6,6 +6,6 @@ export const DEFAULT_OPTIONS = {
   linebreak: '\n',
   indent: ' ',
   shortArraySyntax: false,
-  manifestFile: '.vite/manifest.json',
   unlinkOriginManifest: true,
+  manifestFile: 'manifest.php',
 };
