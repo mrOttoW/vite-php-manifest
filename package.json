@@ -34,7 +34,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "json2php": "^0.0.9"
+    "json2php": "^0.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
