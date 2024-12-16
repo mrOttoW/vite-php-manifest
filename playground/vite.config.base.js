@@ -11,17 +11,17 @@ const globals = {
 };
 
 export const config = {
-  root: `tests`,
+  root: 'playground',
   build: {
     assetsInlineLimit: 0,
     manifest: true,
     outDir: 'build',
     rollupOptions: {
       input: {
-        'jquery-bundle': path.resolve(__dirname, 'src', 'my-jquery-bundle', 'my-jquery-bundle.js'),
-        'lodash-bundle': path.resolve(__dirname, 'src', 'my-lodash-bundle', 'my-lodash-bundle.js'),
-        'react-bundle': path.resolve(__dirname, 'src', 'my-react-bundle', 'my-react-bundle.jsx'),
-        'wp-block-bundle': path.resolve(__dirname, 'src', 'my-blocks-bundles', 'my-wp-block-bundle', 'my-wp-block-bundle.jsx'),
+        'jquery-bundle': path.resolve(__dirname, 'src', 'jquery', 'jquery.js'),
+        'lodash-bundle': path.resolve(__dirname, 'src', 'lodash', 'lodash.js'),
+        'react-bundle': path.resolve(__dirname, 'src', 'react', 'react.jsx'),
+        'blocks-bundle': path.resolve(__dirname, 'src', 'blocks', 'example-block', 'example-block.jsx'),
       },
       output: {
         globals: globals,
@@ -33,7 +33,7 @@ export const config = {
 };
 
 export const pluginOptions = {
-  group: (originalFileName, manifestChunk) => (originalFileName.endsWith('svg') ? 'svg' : 'other'),
+  group: originalFileName => (originalFileName.endsWith('svg') ? 'svg' : 'other'),
   filter: (originalFileName, manifestChunk) => {
     manifestChunk.test = 'test';
     return manifestChunk;

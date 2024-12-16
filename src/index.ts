@@ -5,9 +5,9 @@ import fs from 'fs';
 import path from 'path';
 import json2php from 'json2php';
 
-type ChunkCallback = (originalFileName: string, manifestChunk: ManifestChunk) => ManifestChunk;
+type ChunkCallback = (originalFileName: string, manifestChunk: ManifestChunk) => ManifestChunk; // eslint-disable-line no-unused-vars
 
-type GroupCallback = (originalFileName: string, manifestChunk: ManifestChunk) => string;
+type GroupCallback = (originalFileName: string, manifestChunk: ManifestChunk) => string; // eslint-disable-line no-unused-vars
 
 type ChunkGroup = Record<string, string[]>;
 

@@ -1,4 +1,4 @@
-import './my-jquery-bundle.pcss';
+import './jquery.pcss';
 
 /**
  * Some random AI generated jQuery code.

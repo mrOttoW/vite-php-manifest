@@ -1,5 +1,5 @@
-import './my-react-button.pcss';
-import './my-react-container.pcss';
+import './react-button.pcss';
+import './react-container.pcss';
 
 /**
  * Some random AI generated react code.
